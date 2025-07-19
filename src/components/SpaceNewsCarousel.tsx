@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 interface NewsItem {
+  date: string;
   título: string;
   texto: string;
   fonte: string;
@@ -13,18 +14,21 @@ interface NewsItem {
 // Mock data baseado no exemplo fornecido
 const mockNews: NewsItem[] = [
   {
+    date: "15/Agosto/2025",
     título: "Blue Origin levará gêmeos marcianos da NASA em voo ousado rumo ao espaço profundo",
     texto: "A missão ESCAPADE da NASA, composta por duas sondas gêmeas destinadas a estudar a magnetosfera de Marte, finalmente ganhou nova data de lançamento: 15 de agosto. Elas serão levadas ao espaço a bordo do segundo voo do enorme foguete New Glenn da Blue Origin, marcando sua primeira missão interplanetária. Após atrasos e a retirada da missão do voo inaugural, os artefatos construídos pela Rocket Lab seguirão rumo ao planeta vermelho ao lado de uma carga experimental da Viasat.",
     fonte: "https://www.space.com/space-exploration/launches-spacecraft/twin-nasa-mars-probes-will-fly-on-2nd-ever-launch-of-blue-origins-huge-new-glenn-rocket",
     main_image: "https://cdn.mos.cms.futurecdn.net/9rVW6GG939KMQhjcC6F2sE.jpg"
   },
   {
-    título: "NASA descobre água líquida em lua de Saturno",
-    texto: "Cientistas da NASA confirmaram a presença de oceanos subterrâneos em Enceladus, uma das luas de Saturno. A descoberta foi feita através de análises de dados da sonda Cassini, que detectou gêiseres de vapor d'água emergindo da superfície gelada. Esta descoberta revoluciona nossa compreensão sobre a possibilidade de vida no sistema solar exterior.",
-    fonte: "https://www.nasa.gov/saturn-moon-discovery",
-    main_image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1920&h=1080&fit=crop"
+    date: "19/July/2025",
+    título: "Satélites Gêmeos da NASA Vão Monitorar Tempestades Solares com Precisão Inédita",
+    texto: "A NASA prepara o lançamento da missão TRACERS, composta por dois pequenos satélites que investigarão tempestades solares e sua interação com o campo magnético da Terra. As espaçonaves operarão em órbita sincronizada com o Sol, passando pelas 'cúspides polares', regiões onde o magnetismo terrestre permite a entrada de partículas solares. Ao registrar eventos de reconexão magnética com apenas dois minutos de diferença, os satélites fornecerão medições altamente detalhadas do fenômeno.",
+    fonte: "https://www.space.com/astronomy/2-new-nasa-satellites-will-track-space-weather-to-help-keep-us-safe-from-solar-storms",
+    main_image: "https://cdn.mos.cms.futurecdn.net/4yWvne45YMCoqwTgUa4B9b.jpg"
   },
   {
+    date: "12/Julho/2025",
     título: "SpaceX planeja primeira missão tripulada para Marte em 2026",
     texto: "A SpaceX anunciou oficialmente seus planos para enviar a primeira tripulação humana para Marte em 2026, utilizando a nave Starship. A missão durará aproximadamente 26 meses e levará quatro astronautos para estabelecer uma base permanente no planeta vermelho. Esta será a primeira vez que humanos pisarão em solo marciano.",
     fonte: "https://www.spacex.com/mars-mission-2026",
@@ -88,6 +92,11 @@ export default function SpaceNewsCarousel() {
             
             {/* Content section */}
             <div className={`${currentNews.main_image ? 'w-full md:w-1/2' : 'w-full'} h-1/2 md:h-full p-8 md:p-12 flex flex-col justify-center space-y-6`}>
+              
+              {/* Date */}
+              <div className="text-sm md:text-base text-primary/80 font-medium">
+                {currentNews.date}
+              </div>
               
               {/* Title */}
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-foreground animate-float">
