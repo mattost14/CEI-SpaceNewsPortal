@@ -1,0 +1,22 @@
+# Use Node.js LTS
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY bun.lockb ./
+
+# Install dependencies including @supabase/supabase-js
+RUN npm install
+RUN npm install @supabase/supabase-js
+
+# Copy the rest of the application
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Command to run the application with hot reloading
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "8080"]
