@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, ExternalLink, List, LayoutGrid, Loader2, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, List, LayoutGrid, Loader2, Play, Baseline } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
@@ -63,6 +63,17 @@ const SpaceNewsCarousel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [fontSizeIndex, setFontSizeIndex] = useState(0);
+
+  const fontSizes = [
+    'text-base lg:text-lg xl:text-xl 2xl:text-2xl',
+    'text-lg lg:text-xl xl:text-2xl 2xl:text-3xl',
+    'text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl',
+  ];
+
+  const toggleFontSize = () => {
+    setFontSizeIndex((prevIndex) => (prevIndex + 1) % fontSizes.length);
+  };
 
   const loadNews = useCallback(async (isInitialLoad = false) => {
     if (isFetchingMore || !hasMore) return;
@@ -179,7 +190,7 @@ const SpaceNewsCarousel: React.FC = () => {
                   <div className="text-sm text-primary/80 font-medium mb-2">{formatDate(currentNews.date)}</div>
                   <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold leading-tight text-foreground mb-4">{currentNews.title}</h1>
                   <div className="pr-1 sm:pr-2 lg:pr-4">
-                    <p className="text-base lg:text-lg xl:text-xl 2xl:text-2xl text-muted-foreground leading-relaxed">{currentNews.text}</p>
+                    <p className={`${fontSizes[fontSizeIndex]} text-muted-foreground leading-relaxed transition-all duration-300`}>{currentNews.text}</p>
                   </div>
                 </div>
                 <div className="mt-auto pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -215,7 +226,16 @@ const SpaceNewsCarousel: React.FC = () => {
       )}
 
       {!isListView && carouselNews.length > 0 && (
-        <div className="fixed bottom-4 right-4 z-50">
+        <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2">
+          <Button 
+            variant="outline"
+            size="icon"
+            onClick={toggleFontSize}
+            className="bg-background/50 hover:bg-background/80 rounded-full text-foreground/80 hover:text-foreground transition-all shadow-lg hover:shadow-xl hover:scale-110"
+            aria-label="Mudar tamanho do texto"
+          >
+            <Baseline className="w-5 h-5" />
+          </Button>
           <Button 
             variant="outline"
             size="icon"
