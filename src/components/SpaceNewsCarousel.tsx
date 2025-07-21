@@ -66,7 +66,7 @@ const SpaceNewsCarousel: React.FC = () => {
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % news.length);
-    }, 8000);
+    }, 20000);
 
     return () => clearInterval(interval);
   }, [isAutoPlay, news.length]);
@@ -202,6 +202,13 @@ const SpaceNewsCarousel: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-sm border-t border-border/50 py-2">
+        <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
+          Resumo de Notícias pela IA do CEI
+        </div>
+      </footer>
     </div>
   );
 };
