@@ -202,9 +202,9 @@ const SpaceNewsCarousel: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative z-10 min-h-screen w-full flex items-center justify-center p-2 sm:p-4 lg:p-6 xl:p-8 2xl:p-12">
+            <div className={`relative z-10 min-h-screen w-full ${isListView ? 'pt-24 pb-12' : 'flex items-center justify-center p-2 sm:p-4 lg:p-6 xl:p-8 2xl:p-12'}`}>
         {isListView ? (
-          <NewsListView news={news} onViewArticle={handleViewArticle} onLoadMore={() => loadNews(false)} hasMore={hasMore} isFetchingMore={isFetchingMore} className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[calc(90vh-4rem)]" />
+                    <NewsListView news={news} onViewArticle={handleViewArticle} onLoadMore={() => loadNews(false)} hasMore={hasMore} isFetchingMore={isFetchingMore} className="w-full max-w-5xl mx-auto px-4" />
         ) : carouselNews.length > 0 && currentNews ? (
           <Card className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[90vh] bg-card/10 backdrop-blur-md border-border/20 overflow-hidden animate-slide-in flex flex-col">
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">

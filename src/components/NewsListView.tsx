@@ -25,7 +25,7 @@ interface NewsListViewProps {
 const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoadMore, hasMore, isFetchingMore, className = '' }) => {
 
   return (
-    <div className={`bg-card/10 backdrop-blur-md border border-border/20 rounded-lg p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent ${className}`}>
+        <div className={` ${className}`}>
       <div className="space-y-4">
         {news.map((item) => (
           <Card 
