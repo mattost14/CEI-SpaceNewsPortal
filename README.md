@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+# SpaceNews - Portal de Notícias Espaciais
 
-## Project info
+## Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/c5fc81a1-2fb2-4f20-bb98-d11f45dbfe7b
+O SpaceNews é um portal de notícias sobre exploração espacial, desenvolvido pelo Centro Espacial ITA (CEI). O projeto utiliza inteligência artificial para resumir e apresentar as principais notícias do setor espacial de forma clara e acessível.
 
-## How can I edit this code?
+## 🚀 Recursos
 
-There are several ways of editing your application.
+- **Atualizações em Tempo Real**: Notificações instantâneas de novas notícias
+- **Interface Moderna**: Design responsivo que funciona em qualquer dispositivo
+- **Resumos por IA**: Conteúdo processado e resumido por IA para melhor compreensão
+- **Filtragem Inteligente**: Destaque para as notícias mais relevantes do setor espacial
 
-**Use Lovable**
+## 🛠️ Tecnologias
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c5fc81a1-2fb2-4f20-bb98-d11f45dbfe7b) and start prompting.
+- **Frontend**: React com TypeScript
+- **Estilização**: Tailwind CSS
+- **Backend**: Supabase
+- **Hospedagem**: Vercel/Netlify (a definir)
+- **IA**: Modelos de processamento de linguagem natural
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Como Executar Localmente
 
-**Use your preferred IDE**
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/mattost14/astro-news-carousel-view.git
+   cd astro-news-carousel-view
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+   ```env
+   VITE_SUPABASE_URL=sua_url_do_supabase
+   VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+   ```
 
-Follow these steps:
+4. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+5. Acesse `http://localhost:3000` no seu navegador
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 📡 Funcionalidades do Supabase
 
-# Step 3: Install the necessary dependencies.
-npm i
+O projeto utiliza o Supabase para:
+- Armazenamento de notícias
+- Autenticação de usuários (futuro)
+- Atualizações em tempo real via WebSockets
+- Gerenciamento de conteúdo
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 📝 Licença
 
-**Edit a file directly in GitHub**
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🤝 Contribuição
 
-**Use GitHub Codespaces**
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e enviar pull requests.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📬 Contato
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/c5fc81a1-2fb2-4f20-bb98-d11f45dbfe7b) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Para mais informações sobre o projeto ou parcerias, entre em contato com a equipe do Centro Espacial ITA (CEI).
