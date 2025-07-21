@@ -15,7 +15,7 @@ interface NewsItem {
   main_image: string | null;
 }
 
-const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string): string => {
   try {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { 

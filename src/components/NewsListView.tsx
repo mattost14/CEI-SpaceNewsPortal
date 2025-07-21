@@ -1,8 +1,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { formatDate } from './SpaceNewsCarousel';
 import { ExternalLink, Loader2 } from 'lucide-react';
 
 interface NewsItem {
@@ -24,15 +23,6 @@ interface NewsListViewProps {
 }
 
 const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoadMore, hasMore, isFetchingMore, className = '' }) => {
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-    } catch (error) {
-      // Fallback for dates that are already formatted
-      return dateString;
-    }
-  };
 
   return (
     <div className={`bg-card/10 backdrop-blur-md border border-border/20 rounded-lg p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent ${className}`}>
