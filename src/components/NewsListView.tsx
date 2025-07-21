@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatDate } from './SpaceNewsCarousel';
@@ -23,6 +23,15 @@ interface NewsListViewProps {
 }
 
 const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoadMore, hasMore, isFetchingMore, className = '' }) => {
+  const [expandedArticles, setExpandedArticles] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedArticles(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   return (
         <div className={` ${className}`}>
@@ -46,15 +55,25 @@ const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoad
                 <h3 className="text-lg font-medium mb-2 line-clamp-2">
                   {item.title}
                 </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                  {item.text}
-                </p>
-                {item.source && (
-                  <div className="flex items-center text-sm text-primary cursor-pointer" onClick={(e) => { e.stopPropagation(); window.open(item.source || '', '_blank'); }}>
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    <span>Ver fonte original</span>
-                  </div>
-                )}
+                <div className="mb-2">
+                  <p className={`text-sm text-muted-foreground ${!expandedArticles[item.id] ? 'line-clamp-2' : ''}`}>
+                    {item.text}
+                  </p>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                  <button 
+                    onClick={(e) => toggleExpand(item.id, e)}
+                    className="text-sm text-primary hover:underline focus:outline-none"
+                  >
+                    {expandedArticles[item.id] ? 'Ler menos' : 'Ler mais'}
+                  </button>
+                  {item.source && (
+                    <div className="flex items-center text-sm text-primary cursor-pointer" onClick={(e) => { e.stopPropagation(); window.open(item.source || '', '_blank'); }}>
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      <span>Ver fonte original</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </Card>
