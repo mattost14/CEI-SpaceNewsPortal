@@ -63,7 +63,8 @@ const SpaceNewsCarousel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const [fontSizeIndex, setFontSizeIndex] = useState(0);
+    const [fontSizeIndex, setFontSizeIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   const fontSizes = [
     'text-base lg:text-lg xl:text-xl 2xl:text-2xl',
@@ -114,7 +115,34 @@ const SpaceNewsCarousel: React.FC = () => {
       setCurrentIndex((prev) => (prev + 1) % carouselNews.length);
     }, 20000);
     return () => clearInterval(interval);
-  }, [isAutoPlay, carouselNews.length, isListView]);
+    }, [isAutoPlay, carouselNews.length, isListView]);
+
+  useEffect(() => {
+    if (!isAutoPlay || carouselNews.length === 0 || isListView) {
+      setProgress(0);
+      return;
+    }
+
+    let animationFrameId: number;
+    const startTime = Date.now();
+    const duration = 20000; // 20 seconds
+
+    const animate = () => {
+      const elapsedTime = Date.now() - startTime;
+      const currentProgress = Math.min((elapsedTime / duration) * 100, 100);
+      setProgress(currentProgress);
+
+      if (elapsedTime < duration) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isAutoPlay, currentIndex, carouselNews.length, isListView]);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + carouselNews.length) % carouselNews.length);
@@ -243,8 +271,17 @@ const SpaceNewsCarousel: React.FC = () => {
             className="bg-background/50 hover:bg-background/80 rounded-full text-foreground/80 hover:text-foreground transition-all shadow-lg hover:shadow-xl hover:scale-110"
             aria-label={isAutoPlay ? "Pausar autoplay" : "Iniciar autoplay"}
           >
-            {isAutoPlay ? <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse-glow" /> : <Play className="w-5 h-5" />}
+                                                                        {isAutoPlay ? <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse-glow" /> : <Play className="w-5 h-5" />}
           </Button>
+        </div>
+      )}
+
+      {!isListView && isAutoPlay && (
+        <div className="fixed bottom-[37px] left-0 right-0 h-1 z-20 bg-primary/20 overflow-hidden">
+          <div 
+            className="h-full bg-primary transition-all duration-100 ease-linear"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       )}
 
