@@ -21,7 +21,7 @@ export async function fetchArticles({ limit = 5, offset = 0 }: { limit?: number;
   const { data, error } = await supabase
     .from('articles')
     .select('*')
-    .order('article_date', { ascending: false })
+    .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (error) {

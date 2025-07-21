@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, ExternalLink, List, LayoutGrid, Loader2, Pla
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
-import { fetchArticles, type Article } from '@/lib/supabase';
+import { fetchArticles, type Article, supabase } from '@/lib/supabase';
 import NewsListView from './NewsListView';
 
 interface NewsItem {
@@ -61,6 +61,67 @@ const SpaceNewsCarousel: React.FC = () => {
   const [carouselNews, setCarouselNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Function to load articles
+  const loadArticles = useCallback(async () => {
+    try {
+      console.log('Loading articles...');
+      setIsLoading(true);
+      const articles = await fetchArticles();
+      const newsItems = articles.map(mapArticleToNewsItem);
+      setNews(newsItems); 
+      setCarouselNews(newsItems.slice(0, 5)); 
+      setError(null);
+    } catch (err) {
+      console.error('Error loading articles:', err);
+      setError('Failed to load articles. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+  
+  // Initial load of articles
+  useEffect(() => {
+    loadArticles();
+  }, [loadArticles]);
+  
+  // Set up real-time subscription
+  useEffect(() => {
+    // Only set up the subscription if we have a valid supabase client
+    if (!supabase) {
+      console.error('Supabase client not initialized');
+      return;
+    }
+    
+    console.log('Setting up Supabase real-time subscription...');
+    
+    // Subscribe to changes in the articles table
+    const subscription = supabase
+      .channel('articles-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'articles',
+        },
+        (payload) => {
+          console.log('Change detected in articles table:', payload.eventType);
+          // Refresh the articles when changes are detected
+          loadArticles();
+        }
+      )
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
+
+    // Cleanup subscription on component unmount
+    return () => {
+      console.log('Cleaning up Supabase subscription');
+      supabase.removeChannel(subscription);
+    };
+  }, [loadArticles]);
+
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
     const [fontSizeIndex, setFontSizeIndex] = useState(0);
