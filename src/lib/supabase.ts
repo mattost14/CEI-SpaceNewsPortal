@@ -17,12 +17,12 @@ export type Article = {
   created_at: string;
 };
 
-export async function fetchArticles() {
+export async function fetchArticles({ limit = 5, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const { data, error } = await supabase
     .from('articles')
     .select('*')
     .order('article_date', { ascending: false })
-    .limit(5);
+    .range(offset, offset + limit - 1);
 
   if (error) {
     console.error('Error fetching articles:', error);
