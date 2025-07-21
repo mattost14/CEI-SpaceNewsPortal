@@ -205,7 +205,7 @@ const SpaceNewsCarousel: React.FC = () => {
       </div>
 
       <div className="fixed top-4 right-4 z-50">
-        <div className="flex items-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full p-1 border border-gray-200 dark:border-gray-700 shadow-lg">
+        <div className="flex items-center backdrop-blur-sm rounded-full p-1 shadow-lg">
           <Toggle pressed={!isListView} onPressedChange={() => setIsListView(false)} className="rounded-full p-2 data-[state=on]:bg-primary/10 data-[state=on]:text-primary hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Visualização em carrossel">
             <LayoutGrid className="h-5 w-5" />
           </Toggle>
