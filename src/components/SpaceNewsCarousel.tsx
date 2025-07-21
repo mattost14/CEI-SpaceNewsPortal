@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, ExternalLink, List, LayoutGrid, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, List, LayoutGrid, Loader2, Play } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
@@ -24,19 +24,18 @@ const formatDate = (dateString: string): string => {
       year: 'numeric',
       timeZone: 'UTC'
     };
-    // Check if date is valid before formatting
     if (isNaN(date.getTime())) {
       return dateString;
     }
     return date.toLocaleDateString('pt-BR', options);
   } catch (e) {
-    return dateString; // Fallback for invalid dates
+    return dateString;
   }
 };
 
 const mapArticleToNewsItem = (article: Article): NewsItem => ({
   id: article.id,
-  date: article.article_date, // Keep original date for sorting, format in component
+  date: article.article_date,
   title: article.title,
   text: article.article_text,
   source: article.source_url,
@@ -48,6 +47,7 @@ const SpaceNewsCarousel: React.FC = () => {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isListView, setIsListView] = useState(false);
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [carouselNews, setCarouselNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -55,21 +55,16 @@ const SpaceNewsCarousel: React.FC = () => {
 
   const loadNews = useCallback(async (isInitialLoad = false) => {
     if (isFetchingMore || !hasMore) return;
-
     const loadState = isInitialLoad ? setIsLoading : setIsFetchingMore;
     loadState(true);
-
     try {
       const currentNewsCount = isInitialLoad ? 0 : news.length;
       const articles = await fetchArticles({ offset: currentNewsCount, limit: 5 });
-      
       if (articles.length < 5) {
         setHasMore(false);
       }
-
       const newsItems = articles.map(mapArticleToNewsItem);
       setNews(prevNews => isInitialLoad ? newsItems : [...prevNews, ...newsItems]);
-
     } catch (err) {
       setError('Falha ao carregar notícias.');
       console.error(err);
@@ -83,20 +78,29 @@ const SpaceNewsCarousel: React.FC = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!isAutoPlay || news.length === 0 || isListView) return;
+    const recentNews = news.slice(0, 5);
+    setCarouselNews(recentNews);
+
+    if (currentIndex >= recentNews.length && recentNews.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [news, currentIndex]);
+
+  useEffect(() => {
+    if (!isAutoPlay || carouselNews.length === 0 || isListView) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % news.length);
+      setCurrentIndex((prev) => (prev + 1) % carouselNews.length);
     }, 20000);
     return () => clearInterval(interval);
-  }, [isAutoPlay, news.length, isListView]);
+  }, [isAutoPlay, carouselNews.length, isListView]);
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + news.length) % news.length);
+    setCurrentIndex((prev) => (prev - 1 + carouselNews.length) % carouselNews.length);
     setIsAutoPlay(false);
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % news.length);
+    setCurrentIndex((prev) => (prev + 1) % carouselNews.length);
     setIsAutoPlay(false);
   };
 
@@ -106,12 +110,17 @@ const SpaceNewsCarousel: React.FC = () => {
   };
 
   const handleViewArticle = useCallback((id: string) => {
-    const index = news.findIndex(item => item.id === id);
+    const index = carouselNews.findIndex(item => item.id === id);
     if (index !== -1) {
       setCurrentIndex(index);
       setIsListView(false);
+    } else {
+      const allNewsIndex = news.findIndex(item => item.id === id);
+      if (allNewsIndex !== -1) {
+        setIsListView(true);
+      }
     }
-  }, [news]);
+  }, [news, carouselNews]);
 
   if (isLoading && news.length === 0) {
     return (
@@ -126,7 +135,7 @@ const SpaceNewsCarousel: React.FC = () => {
     return <div className="fixed inset-0 flex items-center justify-center bg-gradient-nebula text-red-500">{error}</div>;
   }
 
-  const currentNews = news[currentIndex];
+  const currentNews = carouselNews[currentIndex];
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-nebula">
@@ -146,7 +155,7 @@ const SpaceNewsCarousel: React.FC = () => {
       <div className="relative z-10 min-h-screen w-full flex items-center justify-center p-2 sm:p-4 lg:p-6 xl:p-8 2xl:p-12">
         {isListView ? (
           <NewsListView news={news} onViewArticle={handleViewArticle} onLoadMore={() => loadNews(false)} hasMore={hasMore} isFetchingMore={isFetchingMore} className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[calc(90vh-4rem)]" />
-        ) : news.length > 0 && currentNews ? (
+        ) : carouselNews.length > 0 && currentNews ? (
           <Card className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[90vh] bg-card/10 backdrop-blur-md border-border/20 overflow-hidden animate-slide-in flex flex-col">
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
               {currentNews.main_image && (
@@ -170,7 +179,7 @@ const SpaceNewsCarousel: React.FC = () => {
                     </Button>
                   )}
                   <div className="flex justify-center sm:justify-end items-center space-x-2">
-                    {news.map((_, index) => (
+                    {carouselNews.map((_, index) => (
                       <button key={index} onClick={() => goToSlide(index)} className={`w-2.5 h-2.5 rounded-full transition-all ${index === currentIndex ? 'bg-primary w-8' : 'bg-primary/30 hover:bg-primary/50'}`} aria-label={`Ir para o slide ${index + 1}`} />
                     ))}
                   </div>
@@ -183,7 +192,7 @@ const SpaceNewsCarousel: React.FC = () => {
         )}
       </div>
 
-      {!isListView && news.length > 1 && (
+      {!isListView && carouselNews.length > 1 && (
         <>
           <button onClick={goToPrevious} className="fixed left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 rounded-full p-2 text-foreground/80 hover:text-foreground transition-all z-20 shadow-lg hover:shadow-xl hover:scale-110" aria-label="Slide anterior">
             <ChevronLeft className="w-6 h-6" />
@@ -194,11 +203,17 @@ const SpaceNewsCarousel: React.FC = () => {
         </>
       )}
 
-      {isAutoPlay && !isListView && news.length > 0 && (
-        <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20">
-          <div className="bg-black/20 backdrop-blur-sm rounded-full p-2 sm:p-3">
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse-glow" />
-          </div>
+      {!isListView && carouselNews.length > 0 && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Button 
+            variant="outline"
+            size="icon"
+            onClick={() => setIsAutoPlay(!isAutoPlay)}
+            className="bg-background/50 hover:bg-background/80 rounded-full text-foreground/80 hover:text-foreground transition-all shadow-lg hover:shadow-xl hover:scale-110"
+            aria-label={isAutoPlay ? "Pausar autoplay" : "Iniciar autoplay"}
+          >
+            {isAutoPlay ? <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse-glow" /> : <Play className="w-5 h-5" />}
+          </Button>
         </div>
       )}
 
