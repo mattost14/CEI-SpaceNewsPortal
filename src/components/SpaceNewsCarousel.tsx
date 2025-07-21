@@ -141,6 +141,7 @@ const SpaceNewsCarousel: React.FC = () => {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      setProgress(0);
     };
   }, [isAutoPlay, currentIndex, carouselNews.length, isListView]);
 
@@ -190,6 +191,18 @@ const SpaceNewsCarousel: React.FC = () => {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-nebula">
       <div className="fixed inset-0 bg-gradient-star animate-pulse-glow" />
+      
+      {/* Logo CEI e título no canto superior esquerdo */}
+      <div className="fixed top-4 left-4 z-50 flex items-center gap-3">
+        <img 
+          src="/cei_logo.png" 
+          alt="CEI - Centro Espacial ITA" 
+          className="h-10 w-auto object-contain drop-shadow-md"
+        />
+        <span className="text-xl font-bold text-white drop-shadow-md">
+          Space News
+        </span>
+      </div>
 
       <div className="fixed top-4 right-4 z-50">
         <div className="flex items-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full p-1 border border-gray-200 dark:border-gray-700 shadow-lg">
@@ -279,8 +292,11 @@ const SpaceNewsCarousel: React.FC = () => {
       {!isListView && isAutoPlay && (
         <div className="fixed bottom-[37px] left-0 right-0 h-1 z-20 bg-primary/20 overflow-hidden">
           <div 
-            className="h-full bg-primary transition-all duration-100 ease-linear"
-            style={{ width: `${progress}%` }}
+            className="h-full bg-primary"
+            style={{ 
+              width: `${progress}%`,
+              transition: 'none' 
+            }}
           />
         </div>
       )}

@@ -43,10 +43,22 @@ All colors MUST be HSL.
     --radius: 1rem;
 
     /* Space gradients */
-    --gradient-cosmic: linear-gradient(135deg, hsl(217 91% 60%), hsl(270 80% 50%));
-    --gradient-nebula: linear-gradient(180deg, hsl(220 25% 5%), hsl(260 60% 15%));
-    --gradient-star: radial-gradient(circle at 50% 50%, hsl(217 91% 60% / 0.3), transparent);
-    
+    --gradient-cosmic: linear-gradient(
+      135deg,
+      hsl(217 91% 60%),
+      hsl(270 80% 50%)
+    );
+    --gradient-nebula: linear-gradient(
+      180deg,
+      hsl(220 25% 5%),
+      hsl(260 60% 15%)
+    );
+    --gradient-star: radial-gradient(
+      circle at 50% 50%,
+      hsl(217 91% 60% / 0.3),
+      transparent
+    );
+
     /* Animations */
     --transition-cosmic: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.3s ease;
