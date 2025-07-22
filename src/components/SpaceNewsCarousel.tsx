@@ -86,41 +86,100 @@ const SpaceNewsCarousel: React.FC = () => {
   }, [loadArticles]);
   
   // Set up real-time subscription
-  useEffect(() => {
-    // Only set up the subscription if we have a valid supabase client
-    if (!supabase) {
-      console.error('Supabase client not initialized');
-      return;
-    }
-    
+useEffect(() => {
+  if (!supabase) {
+    console.error('Supabase client not initialized');
+    return;
+  }
+
+  let retryCount = 0;
+  const maxRetries = 5;
+  let retryTimeout: NodeJS.Timeout;
+  let subscription: any;
+
+  const setupSubscription = async () => {
     console.log('Setting up Supabase real-time subscription...');
     
-    // Subscribe to changes in the articles table
-    const subscription = supabase
-      .channel('articles-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'articles',
-        },
-        (payload) => {
-          console.log('Change detected in articles table:', payload.eventType);
-          // Refresh the articles when changes are detected
-          loadArticles();
-        }
-      )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
+    try {
+      // Clean up any existing subscription
+      if (subscription) {
+        supabase.removeChannel(subscription);
+      }
 
-    // Cleanup subscription on component unmount
-    return () => {
-      console.log('Cleaning up Supabase subscription');
+      subscription = supabase
+        .channel('articles-changes', {
+          config: {
+            broadcast: { self: true },
+            presence: { key: 'articles' },
+            // Add reconnect configuration
+            reconnect: true,
+            eventsPerSecond: 10, // Limit the rate of events
+          },
+        })
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'articles',
+          },
+          (payload) => {
+            console.log('Change detected in articles table:', payload.eventType);
+            loadArticles();
+          }
+        )
+        .on('broadcast', { event: 'heartbeat' }, () => {
+          console.log('Heartbeat received');
+        })
+        .subscribe((status, err) => {
+          console.log('Subscription status:', status);
+          
+          if (status === 'CHANNEL_ERROR') {
+            console.error('Channel error:', err);
+            // Attempt to reconnect with exponential backoff
+            if (retryCount < maxRetries) {
+              const delay = Math.min(1000 * Math.pow(2, retryCount), 30000); // Max 30s delay
+              console.log(`Reconnecting in ${delay}ms... (Attempt ${retryCount + 1}/${maxRetries})`);
+              retryTimeout = setTimeout(() => {
+                retryCount++;
+                setupSubscription();
+              }, delay);
+            } else {
+              console.error('Max reconnection attempts reached. Please refresh the page.');
+            }
+          } else if (status === 'SUBSCRIBED') {
+            // Reset retry count on successful connection
+            retryCount = 0;
+          }
+        });
+
+    } catch (error) {
+      console.error('Error setting up subscription:', error);
+      if (retryCount < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, retryCount), 30000);
+        console.log(`Retrying subscription in ${delay}ms...`);
+        retryTimeout = setTimeout(() => {
+          retryCount++;
+          setupSubscription();
+        }, delay);
+      }
+    }
+  };
+
+  // Initial setup
+  setupSubscription();
+
+  // Cleanup function
+  return () => {
+    console.log('Cleaning up Supabase subscription');
+    if (subscription) {
       supabase.removeChannel(subscription);
-    };
-  }, [loadArticles]);
+    }
+    if (retryTimeout) {
+      clearTimeout(retryTimeout);
+    }
+  };
+}, [loadArticles]);
 
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);

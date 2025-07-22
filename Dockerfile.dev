@@ -6,11 +6,11 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY bun.lockb ./
+# COPY bun.lockb ./
 
 # Install dependencies including @supabase/supabase-js
 RUN npm install
-RUN npm install @supabase/supabase-js
+# RUN npm install @supabase/supabase-js
 
 # Copy the rest of the application
 COPY . .
