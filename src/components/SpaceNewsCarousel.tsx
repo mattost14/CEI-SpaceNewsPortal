@@ -134,8 +134,7 @@ useEffect(() => {
         .subscribe((status, err) => {
           console.log('Subscription status:', status);
           
-          if (status === 'CHANNEL_ERROR') {
-            console.error('Channel error:', err);
+          if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
             // Attempt to reconnect with exponential backoff
             if (retryCount < maxRetries) {
               const delay = Math.min(1000 * Math.pow(2, retryCount), 30000); // Max 30s delay
