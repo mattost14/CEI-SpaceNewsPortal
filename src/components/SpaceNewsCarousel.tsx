@@ -107,15 +107,7 @@ useEffect(() => {
       }
 
       subscription = supabase
-        .channel('articles-changes', {
-          config: {
-            broadcast: { self: true },
-            presence: { key: 'articles' },
-            // Add reconnect configuration
-            reconnect: true,
-            eventsPerSecond: 10, // Limit the rate of events
-          },
-        })
+        .channel('articles-changes')
         .on(
           'postgres_changes',
           {
@@ -178,7 +170,7 @@ useEffect(() => {
       clearTimeout(retryTimeout);
     }
   };
-}, [loadArticles]);
+}, []);
 
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
