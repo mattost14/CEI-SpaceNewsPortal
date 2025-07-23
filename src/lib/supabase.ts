@@ -15,6 +15,7 @@ export type Article = {
   main_image_url: string | null;
   tags: string[] | null;
   created_at: string;
+  sentiment: string | null;
 };
 
 export async function fetchArticles({ limit = 5, offset = 0 }: { limit?: number; offset?: number } = {}) {

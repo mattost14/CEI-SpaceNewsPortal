@@ -13,6 +13,7 @@ interface NewsItem {
   text: string;
   source: string | null;
   main_image: string | null;
+  sentiment: string | null;
 }
 
 export const formatDate = (dateString: string): string => {
@@ -50,7 +51,8 @@ const mapArticleToNewsItem = (article: Article): NewsItem => ({
   title: article.title,
   text: article.article_text,
   source: article.source_url,
-  main_image: article.main_image_url
+  main_image: article.main_image_url,
+  sentiment: article.sentiment
 });
 
 const SpaceNewsCarousel: React.FC = () => {
@@ -330,8 +332,17 @@ useEffect(() => {
         {isListView ? (
                     <NewsListView news={news} onViewArticle={handleViewArticle} onLoadMore={() => loadNews(false)} hasMore={hasMore} isFetchingMore={isFetchingMore} className="w-full max-w-5xl mx-auto px-4" />
         ) : carouselNews.length > 0 && currentNews ? (
-          <Card className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[90vh] bg-card/10 backdrop-blur-md border-border/20 overflow-hidden animate-slide-in flex flex-col">
-            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
+          <Card className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[90vh] bg-card/10 backdrop-blur-md border-border/20 overflow-hidden animate-slide-in flex flex-col relative">
+            {currentNews.sentiment && currentNews.sentiment !== 'neutral' && (
+                <div className={`absolute top-2 right-2 z-10 px-3 py-1 rounded-full text-xs font-medium ${
+                  currentNews.sentiment === 'positive' ? 'bg-green-500/80 text-white' : 
+                  currentNews.sentiment === 'negative' ? 'bg-red-500/80 text-white' : ''
+                }`}>
+                  {currentNews.sentiment === 'positive' ? 'Boa notícia' : 
+                   currentNews.sentiment === 'negative' ? 'Má notícia' : ''}
+                </div>
+              )}
+              <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
               {currentNews.main_image && (
                 <div className="w-full lg:w-5/12 xl:w-4/12 h-[40vh] lg:h-auto overflow-hidden">
                   <img src={currentNews.main_image} alt={currentNews.title} className="w-full h-full object-contain" loading="lazy" />
