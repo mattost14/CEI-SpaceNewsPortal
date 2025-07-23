@@ -3,8 +3,10 @@ import { ChevronLeft, ChevronRight, ExternalLink, List, LayoutGrid, Loader2, Pla
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
-import { fetchArticles, type Article, supabase } from '@/lib/supabase';
 import NewsListView from './NewsListView';
+import NewsSearchFilter from './NewsSearchFilter';
+import { supabase, fetchArticles, Article, ArticleSearchParams } from '@/lib/supabase';
+import { formatDate } from '@/lib/utils';
 
 interface NewsItem {
   id: string;
@@ -15,24 +17,6 @@ interface NewsItem {
   main_image: string | null;
   sentiment: string | null;
 }
-
-export const formatDate = (dateString: string): string => {
-  try {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { 
-      day: '2-digit', 
-      month: 'long', 
-      year: 'numeric',
-      timeZone: 'UTC'
-    };
-    if (isNaN(date.getTime())) {
-      return dateString;
-    }
-    return date.toLocaleDateString('pt-BR', options);
-  } catch (e) {
-    return dateString;
-  }
-};
 
 const getDomainFromUrl = (url: string | null): string => {
   if (!url) return '';
@@ -63,17 +47,21 @@ const SpaceNewsCarousel: React.FC = () => {
   const [carouselNews, setCarouselNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useState<ArticleSearchParams>({});
   
   // Function to load articles
-  const loadArticles = useCallback(async () => {
+  const loadArticles = useCallback(async (params: ArticleSearchParams = {}) => {
     try {
-      console.log('Loading articles...');
+      console.log('Loading articles with params:', params);
       setIsLoading(true);
-      const articles = await fetchArticles();
+      const articles = await fetchArticles(params);
       const newsItems = articles.map(mapArticleToNewsItem);
       setNews(newsItems); 
       setCarouselNews(newsItems.slice(0, 5)); 
       setError(null);
+      
+      // Update hasMore based on whether we got a full page of results
+      setHasMore(articles.length >= 5);
     } catch (err) {
       console.error('Error loading articles:', err);
       setError('Failed to load articles. Please try again later.');
@@ -97,7 +85,7 @@ useEffect(() => {
   let retryCount = 0;
   const maxRetries = 5;
   let retryTimeout: NodeJS.Timeout;
-  let subscription: any;
+  let subscription: ReturnType<typeof supabase.channel> | null = null;
 
   const setupSubscription = async () => {
     console.log('Setting up Supabase real-time subscription for articles update...');
@@ -189,29 +177,69 @@ useEffect(() => {
     setFontSizeIndex((prevIndex) => (prevIndex + 1) % fontSizes.length);
   };
 
-  const loadNews = useCallback(async (isInitialLoad = false) => {
-    if (isFetchingMore || !hasMore) return;
-    const loadState = isInitialLoad ? setIsLoading : setIsFetchingMore;
-    loadState(true);
+  // Initial load function
+  const loadNews = useCallback(async () => {
+    setIsLoading(true);
+    
     try {
-      const currentNewsCount = isInitialLoad ? 0 : news.length;
-      const articles = await fetchArticles({ offset: currentNewsCount, limit: 5 });
-      if (articles.length < 5) {
+      const params = {
+        ...searchParams,
+        offset: 0,
+        limit: 5
+      };
+      
+      console.log('Initial loading news with params:', params);
+      const articles = await fetchArticles(params);
+      
+      if (articles.length === 0 || articles.length < 5) {
         setHasMore(false);
+      } else {
+        setHasMore(true);
       }
+      
       const newsItems = articles.map(mapArticleToNewsItem);
-      setNews(prevNews => isInitialLoad ? newsItems : [...prevNews, ...newsItems]);
+      setNews(newsItems); // Replace the entire array
     } catch (err) {
       setError('Falha ao carregar notícias.');
       console.error(err);
     } finally {
-      loadState(false);
+      setIsLoading(false);
     }
-  }, [isFetchingMore, hasMore, news.length]);
+  }, [searchParams, fetchArticles, mapArticleToNewsItem]);
+  
+  // Load more function - appends to the existing news array
+  const loadMoreNews = useCallback(async () => {
+    // Don't proceed if we're already fetching more or there are no more items
+    if (isFetchingMore || !hasMore) return;
+    
+    setIsFetchingMore(true);
+    
+    try {
+      const params = {
+        ...searchParams,
+        offset: news.length,
+        limit: 5
+      };
+      
+      console.log('Loading more news with params:', params);
+      const articles = await fetchArticles(params);
+      
+      // Update hasMore based on results
+      setHasMore(articles.length === 5);
+      
+      const newsItems = articles.map(mapArticleToNewsItem);
+      setNews(prevNews => [...prevNews, ...newsItems]); // Append to existing array
+    } catch (err) {
+      setError('Falha ao carregar mais notícias.');
+      console.error(err);
+    } finally {
+      setIsFetchingMore(false);
+    }
+  }, [hasMore, isFetchingMore, news.length, searchParams]);
 
   useEffect(() => {
-    loadNews(true);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    loadNews();
+  }, [loadNews]);
 
   useEffect(() => {
     const recentNews = news.slice(0, 5);
@@ -330,7 +358,26 @@ useEffect(() => {
 
             <div className={`relative z-10 min-h-screen w-full ${isListView ? 'pt-24 pb-12' : 'flex items-center justify-center p-2 sm:p-4 lg:p-6 xl:p-8 2xl:p-12'}`}>
         {isListView ? (
-                    <NewsListView news={news} onViewArticle={handleViewArticle} onLoadMore={() => loadNews(false)} hasMore={hasMore} isFetchingMore={isFetchingMore} className="w-full max-w-5xl mx-auto px-4" />
+          <div className="w-full max-w-5xl mx-auto px-4">
+            <NewsSearchFilter 
+              onSearch={(params) => {
+                // Reset news state when filters are cleared or changed
+                setNews([]);
+                setHasMore(true);
+                setSearchParams(params);
+                loadNews();
+              }}
+              isLoading={isLoading}
+            />
+            <NewsListView 
+              news={news} 
+              onViewArticle={handleViewArticle} 
+              onLoadMore={loadMoreNews} 
+              hasMore={hasMore} 
+              isFetchingMore={isFetchingMore} 
+              className="w-full" 
+            />
+          </div>
         ) : carouselNews.length > 0 && currentNews ? (
           <Card className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[90vh] bg-card/10 backdrop-blur-md border-border/20 overflow-hidden animate-slide-in flex flex-col relative">
             {currentNews.sentiment && currentNews.sentiment !== 'neutral' && (

@@ -18,12 +18,54 @@ export type Article = {
   sentiment: string | null;
 };
 
-export async function fetchArticles({ limit = 5, offset = 0 }: { limit?: number; offset?: number } = {}) {
-  const { data, error } = await supabase
+export interface ArticleSearchParams {
+  limit?: number;
+  offset?: number;
+  searchTerm?: string;
+  sentiment?: string | null;
+  startDate?: string;
+  endDate?: string;
+}
+
+export async function fetchArticles({
+  limit = 5,
+  offset = 0,
+  searchTerm = '',
+  sentiment = null,
+  startDate = '',
+  endDate = ''
+}: ArticleSearchParams = {}) {
+  let query = supabase
     .from('articles')
     .select('*')
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1);
+    .order('created_at', { ascending: false });
+  
+  // Apply search term filter if provided
+  if (searchTerm && searchTerm.trim() !== '') {
+    query = query.or(`title.ilike.%${searchTerm}%,article_text.ilike.%${searchTerm}%`);
+  }
+  
+  // Apply sentiment filter if provided
+  if (sentiment) {
+    if (sentiment === 'neutral') {
+      // For neutral sentiment, include both 'neutral' and null values
+      query = query.or('sentiment.is.null,sentiment.eq.neutral');
+    } else if (sentiment !== 'all') {
+      query = query.eq('sentiment', sentiment);
+    }
+  }
+  
+  // Apply date range filters if provided
+  if (startDate) {
+    query = query.gte('article_date', startDate);
+  }
+  
+  if (endDate) {
+    query = query.lte('article_date', endDate);
+  }
+  
+  // Apply pagination
+  const { data, error } = await query.range(offset, offset + limit - 1);
 
   if (error) {
     console.error('Error fetching articles:', error);

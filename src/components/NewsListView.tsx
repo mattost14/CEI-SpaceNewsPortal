@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { formatDate } from './SpaceNewsCarousel';
+import { formatDate } from '@/lib/utils';
 import { ExternalLink, Loader2 } from 'lucide-react';
 
 interface NewsItem {
