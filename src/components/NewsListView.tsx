@@ -35,14 +35,20 @@ const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoad
   };
 
   return (
-        <div className={` ${className}`}>
+    <div className={` ${className}`}>
       <div className="space-y-4">
-        {news.map((item) => (
-          <Card 
-            key={item.id} 
-            className="p-4 hover:bg-accent/50 transition-colors cursor-pointer bg-background/50 relative"
-            onClick={() => onViewArticle(item.id)}
-          >
+        {news.length === 0 ? (
+          <Card className="p-8 text-center bg-background/50">
+            <h3 className="text-lg font-medium mb-2">Nenhuma notícia encontrada</h3>
+            <p className="text-muted-foreground">Tente ajustar seus filtros de busca para encontrar mais resultados.</p>
+          </Card>
+        ) : (
+          news.map((item) => (
+            <Card 
+              key={item.id} 
+              className="p-4 hover:bg-accent/50 transition-colors cursor-pointer bg-background/50 relative"
+              onClick={() => onViewArticle(item.id)}
+            >
             {item.sentiment && item.sentiment !== 'neutral' && (
               <div className={`absolute top-2 right-2 z-10 px-3 py-1 rounded-full text-xs font-medium ${
                 item.sentiment === 'positive' ? 'bg-green-500/80 text-white' : 
@@ -87,9 +93,10 @@ const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoad
               </div>
             </div>
           </Card>
-        ))}
+        )))
+        }
       </div>
-      {hasMore && (
+      {news.length > 0 && hasMore && (
         <div className="flex justify-center mt-6">
           <Button onClick={onLoadMore} disabled={isFetchingMore}>
             {isFetchingMore ? (

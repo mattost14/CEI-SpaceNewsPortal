@@ -365,9 +365,40 @@ useEffect(() => {
                 setNews([]);
                 setHasMore(true);
                 setSearchParams(params);
-                loadNews();
+                
+                // Use the new params directly instead of relying on the updated state
+                const loadWithParams = async () => {
+                  setIsLoading(true);
+                  try {
+                    const fetchParams = {
+                      ...params,
+                      offset: 0,
+                      limit: 5
+                    };
+                    
+                    console.log('Loading news with filter params:', fetchParams);
+                    const articles = await fetchArticles(fetchParams);
+                    
+                    if (articles.length === 0 || articles.length < 5) {
+                      setHasMore(false);
+                    } else {
+                      setHasMore(true);
+                    }
+                    
+                    const newsItems = articles.map(mapArticleToNewsItem);
+                    setNews(newsItems);
+                  } catch (error) {
+                    console.error('Error loading news:', error);
+                    setError('Failed to load news');
+                  } finally {
+                    setIsLoading(false);
+                  }
+                };
+                
+                loadWithParams();
               }}
               isLoading={isLoading}
+              currentFilters={searchParams}
             />
             <NewsListView 
               news={news} 

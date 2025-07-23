@@ -57,12 +57,17 @@ export async function fetchArticles({
   
   // Apply date range filters if provided
   if (startDate) {
+    console.log('Filtering by start date:', startDate);
     query = query.gte('article_date', startDate);
   }
   
   if (endDate) {
+    console.log('Filtering by end date:', endDate);
     query = query.lte('article_date', endDate);
   }
+  
+  // Debug log for the final query
+  console.log('Final query params:', { searchTerm, sentiment, startDate, endDate, offset, limit });
   
   // Apply pagination
   const { data, error } = await query.range(offset, offset + limit - 1);

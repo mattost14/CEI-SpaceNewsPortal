@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,28 +6,44 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ArticleSearchParams } from '@/lib/supabase';
 
 interface NewsSearchFilterProps {
   onSearch: (params: ArticleSearchParams) => void;
   isLoading: boolean;
+  currentFilters: ArticleSearchParams;
 }
 
-const NewsSearchFilter: React.FC<NewsSearchFilterProps> = ({ onSearch, isLoading }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sentiment, setSentiment] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+const NewsSearchFilter: React.FC<NewsSearchFilterProps> = ({ onSearch, isLoading, currentFilters }) => {
+  const [searchTerm, setSearchTerm] = useState(currentFilters.searchTerm || '');
+  const [sentiment, setSentiment] = useState<string | null>(currentFilters.sentiment || null);
+  const [startDate, setStartDate] = useState<Date | null>(currentFilters.startDate ? parseISO(currentFilters.startDate) : null);
+  const [endDate, setEndDate] = useState<Date | null>(currentFilters.endDate ? parseISO(currentFilters.endDate) : null);
   const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
+  
+  // Update local state when currentFilters change
+  useEffect(() => {
+    setSearchTerm(currentFilters.searchTerm || '');
+    setSentiment(currentFilters.sentiment || null);
+    setStartDate(currentFilters.startDate ? parseISO(currentFilters.startDate) : null);
+    setEndDate(currentFilters.endDate ? parseISO(currentFilters.endDate) : null);
+  }, [currentFilters]);
 
   const handleSearch = () => {
+    // Format dates for API and ensure they're properly formatted
+    const formattedStartDate = startDate ? format(startDate, 'yyyy-MM-dd') : '';
+    const formattedEndDate = endDate ? format(endDate, 'yyyy-MM-dd') : '';
+    
+    // Log the dates for debugging
+    console.log('Search with dates:', { formattedStartDate, formattedEndDate });
+    
     onSearch({
       searchTerm,
       sentiment,
-      startDate: startDate ? format(startDate, 'yyyy-MM-dd') : '',
-      endDate: endDate ? format(endDate, 'yyyy-MM-dd') : '',
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
     });
   };
 
