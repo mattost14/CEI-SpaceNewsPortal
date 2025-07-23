@@ -98,7 +98,7 @@ useEffect(() => {
   let subscription: any;
 
   const setupSubscription = async () => {
-    console.log('Setting up Supabase real-time subscription...');
+    console.log('Setting up Supabase real-time subscription for articles...');
     
     try {
       // Clean up any existing subscription
