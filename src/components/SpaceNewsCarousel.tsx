@@ -164,10 +164,11 @@ useEffect(() => {
 
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
-    const [fontSizeIndex, setFontSizeIndex] = useState(0);
+  const [fontSizeIndex, setFontSizeIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
   const fontSizes = [
+    'text-sm lg:text-base xl:text-lg 2xl:text-xl',
     'text-base lg:text-lg xl:text-xl 2xl:text-2xl',
     'text-lg lg:text-xl xl:text-2xl 2xl:text-3xl',
     'text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl',
@@ -411,16 +412,7 @@ useEffect(() => {
           </div>
         ) : carouselNews.length > 0 && currentNews ? (
           <Card className="w-full max-w-[95vw] 2xl:max-w-[90vw] max-h-[90vh] bg-card/10 backdrop-blur-md border-border/20 overflow-hidden animate-slide-in flex flex-col relative">
-            {currentNews.sentiment && currentNews.sentiment !== 'neutral' && (
-                <div className={`absolute top-2 right-2 z-10 px-3 py-1 rounded-full text-xs font-medium ${
-                  currentNews.sentiment === 'positive' ? 'bg-green-500/80 text-white' : 
-                  currentNews.sentiment === 'negative' ? 'bg-red-500/80 text-white' : ''
-                }`}>
-                  {currentNews.sentiment === 'positive' ? 'Boa notícia' : 
-                   currentNews.sentiment === 'negative' ? 'Má notícia' : ''}
-                </div>
-              )}
-              <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
               {currentNews.main_image && (
                 <div className="w-full lg:w-5/12 xl:w-4/12 h-[40vh] lg:h-auto overflow-hidden">
                   <img src={currentNews.main_image} alt={currentNews.title} className="w-full h-full object-contain" loading="lazy" />
@@ -428,7 +420,18 @@ useEffect(() => {
               )}
               <div className={`${currentNews.main_image ? 'w-full lg:w-7/12 xl:w-8/12' : 'w-full'} p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col overflow-hidden`}>
                 <div className="overflow-y-auto h-full pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
-                  <div className="text-sm text-primary/80 font-medium mb-2">{formatDate(currentNews.date)}</div>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="text-sm text-primary/80 font-medium">{formatDate(currentNews.date)}</div>
+                    {currentNews.sentiment && currentNews.sentiment !== 'neutral' && (
+                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        currentNews.sentiment === 'positive' ? 'bg-green-500/80 text-white' : 
+                        currentNews.sentiment === 'negative' ? 'bg-red-500/80 text-white' : ''
+                      }`}>
+                        {currentNews.sentiment === 'positive' ? 'Boa notícia' : 
+                         currentNews.sentiment === 'negative' ? 'Má notícia' : ''}
+                      </div>
+                    )}
+                  </div>
                   <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold leading-tight text-foreground mb-4">{currentNews.title}</h1>
                   <div className="pr-1 sm:pr-2 lg:pr-4">
                     <p className={`${fontSizes[fontSizeIndex]} text-muted-foreground leading-relaxed transition-all duration-300`}>{currentNews.text}</p>
@@ -465,7 +468,7 @@ useEffect(() => {
           </button>
         </>
       )}
-
+      {/* Font size and Auto play controls */}
       {!isListView && carouselNews.length > 0 && (
         <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2">
           <Button 
@@ -488,7 +491,7 @@ useEffect(() => {
           </Button>
         </div>
       )}
-
+      {/* Time Progress bar */}
       {!isListView && isAutoPlay && (
         <div className="fixed bottom-[37px] left-0 right-0 h-1 z-20 bg-primary/20 overflow-hidden">
           <div 
