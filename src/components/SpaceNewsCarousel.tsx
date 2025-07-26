@@ -8,6 +8,9 @@ import NewsSearchFilter from './NewsSearchFilter';
 import { supabase, fetchArticles, Article, ArticleSearchParams } from '@/lib/supabase';
 import { formatDate } from '@/lib/utils';
 
+// Constants
+const CAROUSEL_NEWS_COUNT: number = 10;
+
 interface NewsItem {
   id: string;
   date: string;
@@ -54,10 +57,10 @@ const SpaceNewsCarousel: React.FC = () => {
     try {
       console.log('Loading articles with params:', params);
       setIsLoading(true);
-      const articles = await fetchArticles(params);
+      const articles = await fetchArticles({...params, limit: CAROUSEL_NEWS_COUNT});
       const newsItems = articles.map(mapArticleToNewsItem);
       setNews(newsItems); 
-      setCarouselNews(newsItems.slice(0, 5)); 
+      setCarouselNews(newsItems.slice(0, CAROUSEL_NEWS_COUNT)); 
       setError(null);
       
       // Update hasMore based on whether we got a full page of results
@@ -243,7 +246,7 @@ useEffect(() => {
   }, [loadNews]);
 
   useEffect(() => {
-    const recentNews = news.slice(0, 5);
+    const recentNews = news.slice(0, CAROUSEL_NEWS_COUNT);
     setCarouselNews(recentNews);
 
     if (currentIndex >= recentNews.length && recentNews.length > 0) {
@@ -506,7 +509,7 @@ useEffect(() => {
 
       <footer className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-sm border-t border-border/50 py-2">
         <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
-          Resumo de Notícias pela IA do CEI
+          Resumo de notícias gerado pela IA do CEI
         </div>
       </footer>
     </div>
