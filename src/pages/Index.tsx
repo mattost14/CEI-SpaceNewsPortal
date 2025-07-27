@@ -1,7 +1,7 @@
-import SpaceNewsCarousel from '@/components/SpaceNewsCarousel';
+import SpaceNews from '@/components/SpaceNews';
 
 const Index = () => {
-  return <SpaceNewsCarousel />;
+  return <SpaceNews />;
 };
 
 export default Index;

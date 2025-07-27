@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { List, LayoutGrid, Loader2 } from 'lucide-react';
+import { List, Loader2, TvMinimal } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import NewsListView from './NewsListView';
 import NewsSearchFilter from './NewsSearchFilter';
@@ -29,7 +29,7 @@ const mapArticleToNewsItem = (article: Article): NewsItem => ({
   sentiment: article.sentiment
 });
 
-const SpaceNewsCarousel: React.FC = () => {
+const SpaceNews: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isListView, setIsListView] = useState(false);
@@ -277,20 +277,6 @@ useEffect(() => {
     };
   }, [isAutoPlay, currentIndex, carouselNews.length, isListView]);
 
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + carouselNews.length) % carouselNews.length);
-    setIsAutoPlay(false);
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % carouselNews.length);
-    setIsAutoPlay(false);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-    setIsAutoPlay(false);
-  };
 
   const handleViewArticle = useCallback((id: string) => {
     const index = carouselNews.findIndex(item => item.id === id);
@@ -337,7 +323,7 @@ useEffect(() => {
       <div className="fixed top-4 right-4 z-50">
         <div className="flex items-center backdrop-blur-sm rounded-full p-1 shadow-lg">
           <Toggle pressed={!isListView} onPressedChange={() => setIsListView(false)} className="rounded-full p-2 data-[state=on]:bg-primary/10 data-[state=on]:text-primary hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Visualização em carrossel">
-            <LayoutGrid className="h-5 w-5" />
+            <TvMinimal className="h-5 w-5" />
           </Toggle>
           <Toggle pressed={isListView} onPressedChange={() => setIsListView(true)} className="rounded-full p-2 data-[state=on]:bg-primary/10 data-[state=on]:text-primary hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Visualização em lista">
             <List className="h-5 w-5" />
@@ -425,4 +411,4 @@ useEffect(() => {
   );
 };
 
-export default SpaceNewsCarousel;
+export default SpaceNews;
