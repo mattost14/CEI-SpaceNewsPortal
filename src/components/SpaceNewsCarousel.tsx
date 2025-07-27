@@ -398,7 +398,7 @@ useEffect(() => {
             />
           </div>
         ) : (
-          <div className="w-full max-w-5xl mx-auto">
+          <>
             {carouselNews.length > 0 && (
               <NewsCarousel 
                 news={carouselNews}
@@ -410,7 +410,7 @@ useEffect(() => {
                 toggleFontSize={toggleFontSize}
               />
             )}
-          </div>
+          </>
         )}
       </div>
 
