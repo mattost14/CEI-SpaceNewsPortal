@@ -38,6 +38,7 @@ export async function fetchArticles({
   let query = supabase
     .from('articles')
     .select('*')
+    .order('article_date', { ascending: false })
     .order('created_at', { ascending: false });
   
   // Apply search term filter if provided

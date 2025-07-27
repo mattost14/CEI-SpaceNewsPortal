@@ -189,13 +189,13 @@ useEffect(() => {
       const params = {
         ...searchParams,
         offset: 0,
-        limit: 5
+        limit: CAROUSEL_NEWS_COUNT
       };
       
       console.log('Initial loading news with params:', params);
       const articles = await fetchArticles(params);
       
-      if (articles.length === 0 || articles.length < 5) {
+      if (articles.length === 0 || articles.length < CAROUSEL_NEWS_COUNT) {
         setHasMore(false);
       } else {
         setHasMore(true);
@@ -222,14 +222,14 @@ useEffect(() => {
       const params = {
         ...searchParams,
         offset: news.length,
-        limit: 5
+        limit: CAROUSEL_NEWS_COUNT
       };
       
       console.log('Loading more news with params:', params);
       const articles = await fetchArticles(params);
       
       // Update hasMore based on results
-      setHasMore(articles.length === 5);
+      setHasMore(articles.length === CAROUSEL_NEWS_COUNT);
       
       const newsItems = articles.map(mapArticleToNewsItem);
       setNews(prevNews => [...prevNews, ...newsItems]); // Append to existing array
@@ -377,13 +377,13 @@ useEffect(() => {
                     const fetchParams = {
                       ...params,
                       offset: 0,
-                      limit: 5
+                      limit: CAROUSEL_NEWS_COUNT
                     };
                     
                     console.log('Loading news with filter params:', fetchParams);
                     const articles = await fetchArticles(fetchParams);
                     
-                    if (articles.length === 0 || articles.length < 5) {
+                    if (articles.length === 0 || articles.length < CAROUSEL_NEWS_COUNT) {
                       setHasMore(false);
                     } else {
                       setHasMore(true);
