@@ -191,7 +191,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
 
       {/* Time Progress bar */}
       {isAutoPlay && (
-        <div className="fixed bottom-[89px] left-0 right-0 h-1 z-20 bg-primary/20 overflow-hidden">
+        <div className="fixed bottom-[33px] left-0 right-0 h-1 z-20 bg-primary/20 overflow-hidden">
           <div 
             className="h-full bg-primary"
             style={{ 
