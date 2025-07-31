@@ -13,6 +13,7 @@ export type Article = {
   article_date: string;
   source_url: string | null;
   main_image_url: string | null;
+  main_image_url_storage: string | null;
   tags: string[] | null;
   created_at: string;
   sentiment: string | null;
