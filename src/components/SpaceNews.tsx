@@ -25,7 +25,9 @@ const mapArticleToNewsItem = (article: Article): NewsItem => ({
   title: article.title,
   text: article.article_text,
   source: article.source_url,
-  main_image: article.main_image_url,
+  main_image: article.main_image_url_storage 
+    ? `https://supabase.cei.ita.br/storage/v1/object/${article.main_image_url_storage}` 
+    : article.main_image_url,
   sentiment: article.sentiment
 });
 
