@@ -425,7 +425,7 @@ useEffect(() => {
                 <div className="overflow-y-auto h-full pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
                   <div className="flex justify-between items-center mb-2">
                     <div className="text-sm text-primary/80 font-medium">{formatDate(currentNews.date)}</div>
-                    {currentNews.sentiment && currentNews.sentiment !== 'neutral' && (
+                    {/* {currentNews.sentiment && currentNews.sentiment !== 'neutral' && (
                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                         currentNews.sentiment === 'positive' ? 'bg-green-500/80 text-white' : 
                         currentNews.sentiment === 'negative' ? 'bg-red-500/80 text-white' : ''
@@ -433,7 +433,7 @@ useEffect(() => {
                         {currentNews.sentiment === 'positive' ? 'Boa notícia' : 
                          currentNews.sentiment === 'negative' ? 'Má notícia' : ''}
                       </div>
-                    )}
+                    )} */}
                   </div>
                   <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold leading-tight text-foreground mb-4">{currentNews.title}</h1>
                   <div className="pr-1 sm:pr-2 lg:pr-4">

@@ -49,7 +49,7 @@ const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoad
               className="p-4 hover:bg-accent/50 transition-colors cursor-pointer bg-background/50 relative"
               onClick={() => onViewArticle(item.id)}
             >
-            {item.sentiment && item.sentiment !== 'neutral' && (
+            {/* {item.sentiment && item.sentiment !== 'neutral' && (
               <div className={`absolute top-2 right-2 z-10 px-3 py-1 rounded-full text-xs font-medium ${
                 item.sentiment === 'positive' ? 'bg-green-500/80 text-white' : 
                 item.sentiment === 'negative' ? 'bg-red-500/80 text-white' : ''
@@ -57,7 +57,7 @@ const NewsListView: React.FC<NewsListViewProps> = ({ news, onViewArticle, onLoad
                 {item.sentiment === 'positive' ? 'Boa notícia' : 
                  item.sentiment === 'negative' ? 'Má notícia' : ''}
               </div>
-            )}
+            )} */}
             <div className="flex flex-col sm:flex-row gap-4">
               {item.main_image && (
                 <div className="w-full sm:w-32 h-32 flex-shrink-0 overflow-hidden rounded-md">
